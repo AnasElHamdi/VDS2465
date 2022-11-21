@@ -3,6 +3,7 @@ import threading
 from concurrent.futures.thread import _worker
 import os
 from datetime import datetime
+import asyncio
 #from main import deque
 
 HOST = "proof.hopto.org"  # The server's hostname or IP address
@@ -110,6 +111,15 @@ class VDS():
                     Counter += 1
                 # wenn etwas in der warteschlange steckt dann schicke den alarm ab
                 # fehler bei der übergabe der warteschlange
+def data(test):
+    if len(test) !=0:
+        print("Alarm in der Warteschlange")
+
+
+
+
+
+
 
               #  if len(q) != 0:
               #       ID_chars = data[0:3]
