@@ -1,17 +1,28 @@
+from vds import  VDSpackage
 from vds import VDS
-from vds import data
-#from vds import Warteschlange
-from collections import deque
-from vds import VDSpackage
+from vds import VDS
 import time
+from fastapi import FastAPI
 
 
-data = data("0000")
+
+
 
 
 vds = VDS()
 
+app = FastAPI()
+@app.on_event("startup")
+async def startup_event():
+    print("Server gestartet")
 
-while True:
-    print(".")
-    time.sleep(5)
+@app.get("/alarm")
+async def alarm():
+    print("Alarm eingetretten")
+
+print("Hallo")
+
+
+
+#while True:
+   # print(".")
