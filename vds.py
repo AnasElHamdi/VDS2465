@@ -3,8 +3,8 @@ import threading
 from concurrent.futures.thread import _worker
 import os
 from datetime import datetime
+import time
 import asyncio
-#from main import deque
 
 HOST = "proof.hopto.org"  # The server's hostname or IP address
 PORT = 1100  # The port used by the server
@@ -52,7 +52,9 @@ class VDSpackage():
 class VDS():
     def __init__(self):
         # Initialisierung von VDS
-        # self.vds = VDSpackage()
+
+        #self.vds = 0
+        self.queue = []
         self.thread = threading.Thread(target=self.worker)  # Worker Thread starten.
         self.thread.start()
         d.print("Worker started")
@@ -62,9 +64,9 @@ class VDS():
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((HOST, PORT))
             while True:
+                #self.queue.append("1111")
                 # Client hört zu
                 data = s.recv(1024)
-
                 object = VDSpackage(data)
 
                 Counter = 0
@@ -79,7 +81,7 @@ class VDS():
                     object.CE_chars = bytes(2)
                     object.ik_chars = bytes(b'\x02')
                     SyncResponse = (
-                                object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars + object.KN_chars)
+                            object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars + object.KN_chars)
                     print('Sync Request incoming : ', SyncResponse, valuesreceive)
                     s.sendall(SyncResponse)
 
@@ -95,44 +97,42 @@ class VDS():
                     object.ID_kennung = bytes(b'\x90') + (b'\x99') + (b'\x99')
                     object.Payload_Ack = bytes(b'\x06') + (b'\x56') + (b'\x00') + (b'\x00') + (b'\x00')
                     Payload = (
-                                object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars + object.Payload_Ack + object.ID_kennung)
+                            object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars + object.Payload_Ack + object.ID_kennung)
                     print('Payload incoming : ', Payload)
                     s.sendall(Payload)
 
                 # Data Request
                 elif object.ik_chars == 0x3:
+
                     Counter += 1
                     print(Counter)
                     object.ik_chars = bytes(b'\x03')
                     DataRequest = (
-                                object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars)
+                            object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars)
                     print('Data request incoming : ', DataRequest, valuessend, valuesreceive)
                     s.sendall(DataRequest)
                     Counter += 1
+
+
                 # wenn etwas in der warteschlange steckt dann schicke den alarm ab
                 # fehler bei der übergabe der warteschlange
-def data(test):
-    if len(test) !=0:
-        print("Alarm in der Warteschlange")
 
-
-
-
-
-
-
-              #  if len(q) != 0:
-              #       ID_chars = data[0:3]
-                    #        ID_Alarmstufe = bytes(b'\x44')
-                    #        LN_chars = bytes(b'\x37')
-                    #  ik_chars = bytes(b'\x04')
-                    # alarm_linie = bytes(b'\x05') + (b'\x02') + (b'\x00') + (b'\x02') + (b'\x00') + (b'\x01') + (
-                    #   b'\x00') + (b'\x07') + (b'\x50') + (b'\x50') + (b'\x14') + (b'\x04') + (b'\x10') + (b'\x00') + (
-                    #                 b'\x17')
-                    # alarm_code = bytes(b'\x36')
-                    # Alarm = (ID_chars + ID_Alarmstufe + countersend_chars + CE_chars + counterreceive_chars + ik_chars + pk_chars + LN_chars + alarm_linie + alarm_code)
-                    # print('Alarm:', ID_kennung, valuesreceive, valuessend)
-                    # s.sendall(Alarm)
-                    # print('erfolgreich')
-                    # else:
-                    # s.sendall(DataRequest)
+                if self.queue:
+                    print(self.queue.pop(0))
+                    ID_chars = data[0:3]
+                    print(ID_chars)
+                    ID_Alarmstufe = bytes(b'\x44')
+                    LN_chars = bytes(b'\x37')
+                    ik_chars = bytes(b'\x04')
+                    object.ID_kennung = bytes(b'\x90') + (b'\x99') + (b'\x99')
+                    alarm_linie = bytes(b'\x05') + (b'\x02') + (b'\x00') + (b'\x02') + (b'\x00') + (b'\x01') + (
+                    b'\x00') + (b'\x07') + (b'\x50') + (b'\x50') + (b'\x14') + (b'\x04') + (b'\x10') + (b'\x00') + (
+                    b'\x17')
+                    alarm_code = bytes(b'\x36')
+                    Alarm = (ID_chars + ID_Alarmstufe + object.countersend_chars + object.CE_chars + object.counterreceive_chars + ik_chars + object.pk_chars + LN_chars + alarm_linie + alarm_code)
+                    print(Alarm)
+                    s.sendall(Alarm)
+                    print('erfolgreich')
+                else:
+                    print(self.queue)
+                time.sleep(5)
