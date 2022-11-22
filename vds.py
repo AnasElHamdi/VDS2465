@@ -105,7 +105,6 @@ class VDS():
                 elif object.ik_chars == 0x3:
 
                     Counter += 1
-                    print(Counter)
                     object.ik_chars = bytes(b'\x03')
                     DataRequest = (
                             object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars)
@@ -118,9 +117,10 @@ class VDS():
                 # fehler bei der übergabe der warteschlange
 
                 if self.queue:
-                    print(self.queue.pop(0))
+                  #wenn Code fertig alarmid wird direkt von Website übernommen und kann verwendet werden
+                  #alarmid = self.queue.pop(0)
+                  #alarmid2 = self.queue.pop(0)
                     ID_chars = data[0:3]
-                    print(ID_chars)
                     ID_Alarmstufe = bytes(b'\x44')
                     LN_chars = bytes(b'\x37')
                     ik_chars = bytes(b'\x04')
@@ -130,9 +130,7 @@ class VDS():
                     b'\x17')
                     alarm_code = bytes(b'\x36')
                     Alarm = (ID_chars + ID_Alarmstufe + object.countersend_chars + object.CE_chars + object.counterreceive_chars + ik_chars + object.pk_chars + LN_chars + alarm_linie + alarm_code)
-                    print(Alarm)
                     s.sendall(Alarm)
-                    print('erfolgreich')
                 else:
                     print(self.queue)
                 time.sleep(5)
