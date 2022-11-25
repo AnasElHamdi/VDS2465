@@ -36,6 +36,7 @@ class VDSpackage():
         self.counterreceive_chars = data[4:8]
         self.countersend_chars = data[10:14]
 
+
     def inc_receive(self):
         d.print("increase receive")
         self.counterreceive_chars = bytearray(self.counterreceive_chars)
@@ -55,6 +56,8 @@ class VDS():
 
         #self.vds = 0
         self.queue = []
+        self.byteid = bytearray
+
         self.thread = threading.Thread(target=self.worker)  # Worker Thread starten.
         self.thread.start()
         d.print("Worker started")
@@ -64,6 +67,7 @@ class VDS():
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((HOST, PORT))
             while True:
+
                 #self.queue.append("1111")
                 # Client hört zu
                 data = s.recv(1024)
@@ -118,19 +122,27 @@ class VDS():
 
                 if self.queue:
                   #wenn Code fertig alarmid wird direkt von Website übernommen und kann verwendet werden
-                  #alarmid = self.queue.pop(0)
+                  #
+                  # alarmid = self.queue.pop(0)
+                    self.queue = self.queue.pop(0)
                   #alarmid2 = self.queue.pop(0)
+                  #in bytes conventierte ID falls gebraucht wird
+                  #  print(type(self.queue))
+                  #  print(self.queue)
+
                     ID_chars = data[0:3]
                     ID_Alarmstufe = bytes(b'\x44')
                     LN_chars = bytes(b'\x37')
                     ik_chars = bytes(b'\x04')
                     object.ID_kennung = bytes(b'\x90') + (b'\x99') + (b'\x99')
-                    alarm_linie = bytes(b'\x05') + (b'\x02') + (b'\x00') + (b'\x02') + (b'\x00') + (b'\x01') + (
-                    b'\x00') + (b'\x07') + (b'\x50') + (b'\x50') + (b'\x14') + (b'\x04') + (b'\x10') + (b'\x00') + (
-                    b'\x17')
-                    alarm_code = bytes(b'\x36')
+                    alarm_linie = bytes(b'\x05') + (b'\x02') + (b'\x00') + (b'\x02') + (b'\x00') + (b'\x01') + (b'\x00') + (b'\x07') + (b'\x50') + (b'\x50') + (b'\x14') + (b'\x04') + (b'\x10') + (b'\x00') + (b'\x17')
+                    alarm_code = (self.byteid)
+                    #alarm_code = bytes(b'\x36')
                     Alarm = (ID_chars + ID_Alarmstufe + object.countersend_chars + object.CE_chars + object.counterreceive_chars + ik_chars + object.pk_chars + LN_chars + alarm_linie + alarm_code)
                     s.sendall(Alarm)
+                    print("Alarm gesendet")
+                    print(self.queue)
+                    print(alarm_code)
                 else:
                     print(self.queue)
                 time.sleep(5)
