@@ -57,22 +57,24 @@ class VDS():
         #self.vds = 0
         self.queue = []
         self.byteid = bytearray
+        self.Warte = []
+        self.Carsten = []
+
 
         self.thread = threading.Thread(target=self.worker)  # Worker Thread starten.
         self.thread.start()
         d.print("Worker started")
+
 
     def worker(self):  # Async thread zur Kommunikation mit Empfänger
         d.print("Connect to Server")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((HOST, PORT))
             while True:
-
                 #self.queue.append("1111")
                 # Client hört zu
                 data = s.recv(1024)
                 object = VDSpackage(data)
-
                 Counter = 0
 
                 # hochzählen des Counters
@@ -84,8 +86,7 @@ class VDS():
                     Counter += 1
                     object.CE_chars = bytes(2)
                     object.ik_chars = bytes(b'\x02')
-                    SyncResponse = (
-                            object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars + object.KN_chars)
+                    SyncResponse = (object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars + object.KN_chars)
                     print('Sync Request incoming : ', SyncResponse, valuesreceive)
                     s.sendall(SyncResponse)
 
@@ -100,8 +101,7 @@ class VDS():
                     object.ID_charspay = bytes(b'\037')
                     object.ID_kennung = bytes(b'\x90') + (b'\x99') + (b'\x99')
                     object.Payload_Ack = bytes(b'\x06') + (b'\x56') + (b'\x00') + (b'\x00') + (b'\x00')
-                    Payload = (
-                            object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars + object.Payload_Ack + object.ID_kennung)
+                    Payload = (object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars + object.Payload_Ack + object.ID_kennung)
                     print('Payload incoming : ', Payload)
                     s.sendall(Payload)
 
@@ -110,8 +110,7 @@ class VDS():
 
                     Counter += 1
                     object.ik_chars = bytes(b'\x03')
-                    DataRequest = (
-                            object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars)
+                    DataRequest = (object.ID_chars + object.countersend_chars + object.CE_chars + object.counterreceive_chars + object.ik_chars + object.pk_chars + object.LN_chars)
                     print('Data request incoming : ', DataRequest, valuessend, valuesreceive)
                     s.sendall(DataRequest)
                     Counter += 1
@@ -124,11 +123,12 @@ class VDS():
                   #wenn Code fertig alarmid wird direkt von Website übernommen und kann verwendet werden
                   #
                   # alarmid = self.queue.pop(0)
-                    self.queue = self.queue.pop(0)
+                  #
                   #alarmid2 = self.queue.pop(0)
                   #in bytes conventierte ID falls gebraucht wird
                   #  print(type(self.queue))
                   #  print(self.queue)
+                    #self.queue = self.queue.pop(0)
 
                     ID_chars = data[0:3]
                     ID_Alarmstufe = bytes(b'\x44')
@@ -140,9 +140,13 @@ class VDS():
                     #alarm_code = bytes(b'\x36')
                     Alarm = (ID_chars + ID_Alarmstufe + object.countersend_chars + object.CE_chars + object.counterreceive_chars + ik_chars + object.pk_chars + LN_chars + alarm_linie + alarm_code)
                     s.sendall(Alarm)
+                    self.Warte.append(Alarm)
                     print("Alarm gesendet")
-                    print(self.queue)
-                    print(alarm_code)
+                    self.queue.pop(0)
+                    print("§§§§§§§§§§§§",self.Carsten)
+                    #print(self.queue)
+                   # print(alarm_code)
+
                 else:
                     print(self.queue)
                 time.sleep(5)
