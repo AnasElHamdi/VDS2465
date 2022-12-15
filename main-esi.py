@@ -5,7 +5,6 @@ import time
 from fastapi import FastAPI
 import uvicorn
 import datetime
-from pprint import pprint
 
 vds = VDS()
 
@@ -17,6 +16,16 @@ dt
 @app.on_event("startup")
 async def startup_event():
     print("Server gestartet")
+
+
+@app.get("/{1000}")
+async def queue(test):
+    print("Queue angekommen")
+    alarmid1 = int(test)
+    vds.q =alarmid1.to_bytes(2,'big')
+    vds.q.__add__(vds.q)
+    return("Ich glaube es hat geklappt")
+    print(vds.q)
 
 
 @app.get("/{alarm}/{test}/2000")
@@ -32,7 +41,7 @@ async def alarm(test):
         bt = datetime.datetime.now()
         bt = bt.replace(microsecond=0)  # Returns a copy
         bt
-        pprint(dt,bt,vds.Warte)
+        print(dt,bt,vds.Warte)
         return ("die Abgeschickte AlarmID beträgt:",alarmid,"Die Sendezeit beträgt:",dt,"Der Alarm ist um:",bt,"angekommen",)
 
 
@@ -40,22 +49,26 @@ async def alarm(test):
 @app.get("/{alarm}/{id}")
 async def alarm(id):
     print("Alarm eingetreten")
-    #Konventieren der ID in int/bytes
-    vds.Carsten.append(id)
+    #Konventieren der ID in int/bytess<
     intid = int(id)
-
     print(type(intid))
     vds.byteid = intid.to_bytes(2, 'big')
     print(type(vds.byteid))
     vds.queue.append(vds.byteid)
+    
+    print("Queue angekommen")
+    alarmid1 = int(test)
+    vds.q =alarmid1.to_bytes(2,'big')
+    vds.q.__add__(vds.q)
+    return("Ich glaube es hat geklappt")
+    print(vds.q)
 
-
-    return ("Alarm entgegengenommen",)
+    return ("Alarm entgegengenommen")
 
 
 @app.get("/warteschlange/welche/nr")
 async def warteschlange():
-    return "Vor ihnen sind:", (len(vds.queue)),"Alarme","Diese alarme wurden bereits Bearbeitet:",         vds.Carsten
+    return "Vor ihnen sind:", (len(vds.queue)),"Alarme",
 
     # Objekt printen mit den Infos (Von wo komme ich, wann bin ich gekommen, und dann wurde ich versendet)
 
