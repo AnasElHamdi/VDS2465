@@ -4,6 +4,8 @@ from concurrent.futures.thread import _worker
 import os
 from datetime import datetime
 import time
+from queue import Queue
+
 import asyncio
 
 HOST = "proof.hopto.org"  # The server's hostname or IP address
@@ -58,7 +60,7 @@ class VDS():
         self.queue = []
         self.byteid = bytearray
         self.Warte = []
-        self.Carsten = []
+        self.q = Queue
 
 
         self.thread = threading.Thread(target=self.worker)  # Worker Thread starten.
@@ -143,7 +145,6 @@ class VDS():
                     self.Warte.append(Alarm)
                     print("Alarm gesendet")
                     self.queue.pop(0)
-                    print("§§§§§§§§§§§§",self.Carsten)
                     #print(self.queue)
                    # print(alarm_code)
 
