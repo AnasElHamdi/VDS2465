@@ -6,8 +6,6 @@ from datetime import datetime
 import time
 from queue import Queue
 
-import asyncio
-
 HOST = "proof.hopto.org"  # The server's hostname or IP address
 PORT = 1100  # The port used by the server
 
@@ -60,7 +58,8 @@ class VDS():
         self.queue = []
         self.byteid = bytearray
         self.Warte = []
-        self.q = Queue
+        self.Carsten = []
+        self.q = Queue(maxsize=3)
 
 
         self.thread = threading.Thread(target=self.worker)  # Worker Thread starten.
@@ -145,6 +144,7 @@ class VDS():
                     self.Warte.append(Alarm)
                     print("Alarm gesendet")
                     self.queue.pop(0)
+                    print("§§§§§§§§§§§§",self.Carsten)
                     #print(self.queue)
                    # print(alarm_code)
 
